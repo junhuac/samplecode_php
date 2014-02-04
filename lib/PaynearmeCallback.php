@@ -3,6 +3,8 @@
  * PayNearMe Callbacks API - PHP implementation details
  * PHP v5.3.x+ supported
  *
+ * This is a base class to be extended by your own callback implementations.
+ * This pulls out params and provides a common interface for handling the requests.
  */
 
 abstract class PaynearmeCallback {
@@ -24,6 +26,7 @@ abstract class PaynearmeCallback {
     $this->timestamp = $params['timestamp'];
     $this->site_order_identifier = $params['site_order_identifier'];
     $this->pnm_order_identifier = $params['pnm_order_identifier'];
+    $this->site_order_annotation = $params['site_order_annotation'];
     $this->test = $params['test'] == true;
 
     # Warn if the sig is invalid, DEBUG will show valid outcomes.
@@ -45,6 +48,27 @@ abstract class PaynearmeCallback {
 
   public function valid_signature() {
     return $this->calculated_sig === $this->request_sig;
+  }
+
+  # Test hackery - returns a response - if nil, handle normally
+  protected function handle_special_condition($arg) {
+    if (empty($arg)) {
+          return null;
+    } elseif (preg_match("/^confirm_delay_([0-9]+)/", $arg, $matches)) {
+      PnmLogger::info("Delaying response by {$matches[1]} seconds");
+      sleep($matches[1]);
+    } elseif ($arg == 'confirm_bad_xml') {
+      PnmLogger::info('Responding with bad/broken xml');
+      return '<result';
+    } elseif ($arg == 'confirm_blank') {
+      PnmLogger::info('Responding with a blank response');
+      return '';
+    } elseif ($arg == 'confirm_redirect') {
+      PnmLogger::info('Redirecting to /');
+      header('Location: /');
+    }
+    PnmLogger::debug('Reached end of #handle_special_condition, returning null - handle rest of response as usual.');
+    return null;
   }
 
   // ----------
