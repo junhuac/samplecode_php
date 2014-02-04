@@ -11,8 +11,8 @@ class ExampleAuthorizationCallbackHandler extends PaynearmeCallback {
 	    # beginning with "TEST" and a valid signature.
 		$accept = $this->valid_signature() && strpos($this->site_order_identifier, 'TEST') === 0;
 
-    PnmLogger::debug("Order {$this->site_order_identifier} will" 
-      . (!$accept ? ' NOT ' : ' ') . 'be accepted!');
+	    PnmLogger::debug("Order {$this->site_order_identifier} will" 
+	      . (!$accept ? ' NOT ' : ' ') . 'be accepted!');
 
 	    # Build our xml output
 		$xml = new CallbackXmlBuilder('payment_authorization_response');
@@ -27,7 +27,7 @@ class ExampleAuthorizationCallbackHandler extends PaynearmeCallback {
 			$xml->createElement('receipt', $accept ? 'Thank you for your order!' : 'Order Declined'));
 		$auth->appendChild(
 			$xml->createElement('memo', 
-				$accept ? date('YYYY-MM-DD HH:mm:ss') : "Invalid payment: {$this->site_order_identifier}"));
+				$accept ? gmdate('Y-M-D H:i:s') : "Invalid payment: {$this->site_order_identifier}"));
 
 		PnmLogger::debug('End of /authorize, returning XML');
 		return $xml->to_xml();

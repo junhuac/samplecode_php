@@ -26,8 +26,6 @@ abstract class PaynearmeCallback {
     $this->pnm_order_identifier = $params['pnm_order_identifier'];
     $this->test = $params['test'] == true;
 
-    PnmLogger::info('Params: ' + print_r($params, true));
-
     # Warn if the sig is invalid, DEBUG will show valid outcomes.
     PnmLogger::log($this->valid_signature() ? PnmLogger::DEBUG : PnmLogger::WARN, 
       sprintf("Signature %s was %s, expected: %s", 
