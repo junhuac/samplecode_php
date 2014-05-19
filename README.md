@@ -2,7 +2,7 @@ PayNearMe - PHP Callbacks
 -------------------------
 
 This is a starting point for integrating your service with PayNearMe's callback
-APIs. Provided in this project is a framework for handling incoming callbacks
+system. Provided in this project is a framework for handling incoming callbacks
 from PayNearMe and constructing the appropriate response. Each callback method
 includes an example implementation.
 
