@@ -29,7 +29,23 @@ abstract class PaynearmeCallback {
     $this->site_order_annotation = $params['site_order_annotation'];
     $this->test = $params['test'] == true;
 
-    # Warn if the sig is invalid, DEBUG will show valid outcomes.
+    ## InvalidSignatureException
+    #  With the exception of Invalid Signature and Internal Server errors, it is expected that the callback response
+    #  be properly formatted XML per the PayNearMe specification.
+    #
+    #  This is a security exception and may highlight a configuration problem (wrong secret or siteIdentifier) OR it
+    #  may highlight a possible payment injection from a source other than PayNearMe.  You may choose to notify your
+    #  IT department when this error class is raised.  PayNearMe strongly recommends that your callback listeners be
+    #  whitelisted to ONLY allow traffic from PayNearMe IP addresses.
+    #
+    #  When this class of error is raised in a production environment you may choose to not respond to PayNearMe, which
+    #  will trigger a timeout exception, leading to PayNearMe to retry the callbacks up to 40 times.  If the error
+    #  persists, callbacks will be suspended.
+    #
+    #  In development environment this default message will aid with debugging.
+    #
+    #  Warn if the sig is invalid, DEBUG will show valid outcomes.
+
     PnmLogger::log($this->valid_signature() ? PnmLogger::DEBUG : PnmLogger::WARN, 
       sprintf("Signature %s was %s, expected: %s", 
         $this->request_sig, $this->valid_signature() ? 'valid' : 'invalid', $this->calculated_sig));
